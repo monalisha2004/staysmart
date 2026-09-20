@@ -33,5 +33,22 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+const suspendUser = async (req, res) => { try { const { reason } = req.body;
+ if (!reason || !reason.trim()) { return res.status(400).json({ message: "Suspension reason is required" });
+ } 
+ const user = await User.findById(req.params.id); 
+ if (!user) { return res.status(404).json({ message: "User not found" }); 
+} 
+user.status = "suspended";
+ user.suspension_reason = reason.trim();
+  user.suspended_at = new Date();
+   await user.save();
+    const { password_hash, ...safeUser } = user.toObject(); 
+    res.json({ message: "User suspended", user: safeUser });
+ } catch (err)
+  { 
+    res.status(500).json({ message: "Server error", error: err.message });
+ } 
+};
 
-module.exports = { getProfile, updateProfile };
+module.exports = { getProfile, updateProfile, suspendUser };
