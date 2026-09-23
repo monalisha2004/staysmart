@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   createProperty,
+  getProperties,
   getMyProperties,
   getPropertyById,
   updateProperty,
@@ -12,6 +13,7 @@ const { protect, authorize } = require("../middleware/auth");
 const upload = require("../middleware/upload");
 
 router.post("/", protect, authorize("owner"), createProperty);
+router.get("/", getProperties);
 router.get("/mine", protect, authorize("owner"), getMyProperties);
 router.get("/:id", getPropertyById);
 router.put("/:id", protect, authorize("owner"), updateProperty);

@@ -27,6 +27,47 @@ const createProperty = async (req, res) => {
   }
 };
 
+const getProperties = async (req, res) => {
+  try {
+    const { city, locality, title, minRent, maxRent, type, furnishing, occupancy, sort, page = 1, limit = 10 } = req.query;
+
+    const filter = { status: "published" };
+
+    if (city) filter.city = new RegExp(city, "i");
+    if (locality) filter.locality = new RegExp(locality, "i");
+    if (title) filter.title = new RegExp(title, "i");
+    if (type) filter.type = new RegExp(type, "i");
+    if (furnishing) filter.furnishing = furnishing;
+    if (occupancy) filter.occupancy = new RegExp(occupancy, "i");
+
+    if (minRent || maxRent) {
+      filter.rent = {};
+      if (minRent) filter.rent.$gte = Number(minRent);
+      if (maxRent) filter.rent.$lte = Number(maxRent);
+    }
+
+    let sortOption = { createdAt: -1 };
+    if (sort === "rent_asc") sortOption = { rent: 1 };
+    if (sort === "rent_desc") sortOption = { rent: -1 };
+
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.max(1, Number(limit));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [properties, total] = await Promise.all([
+      Property.find(filter).sort(sortOption).skip(skip).limit(limitNum),
+      Property.countDocuments(filter),
+    ]);
+
+    res.json({
+      properties,
+      pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 const getMyProperties = async (req, res) => {
   try {
     const properties = await Property.find({ owner_id: req.user.id }).sort({ createdAt: -1 });
@@ -122,4 +163,4 @@ const uploadImages = async (req, res) => {
   }
 };
 
-module.exports = { createProperty, getMyProperties, getPropertyById, updateProperty, updateStatus, uploadImages };
+module.exports = { createProperty, getProperties, getMyProperties, getPropertyById, updateProperty, updateStatus, uploadImages };
