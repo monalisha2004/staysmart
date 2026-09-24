@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
+const favouriteRoutes = require("./routes/favouriteRoutes");
 const app = express();
 connectDB();
 app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
@@ -15,5 +16,6 @@ app.get("/api/health", (req, res) => { res.json({ status: "ok", message: "StaySm
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/properties", propertyRoutes);
+app.use("/api/favourites", favouriteRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
