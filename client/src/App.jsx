@@ -1,4 +1,7 @@
 import { Routes, Route } from "react-router-dom";
+import HomeSearch from "./pages/HomeSearch.jsx";
+import PropertyResults from "./pages/PropertyResults.jsx";
+import PropertyDetails from "./pages/PropertyDetails.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -9,6 +12,9 @@ import RequireAuth from "./components/RequireAuth.jsx";
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<HomeSearch />} />
+      <Route path="/properties" element={<PropertyResults />} />
+      <Route path="/properties/:id" element={<PropertyDetails />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
